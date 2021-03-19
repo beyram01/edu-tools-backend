@@ -7,10 +7,12 @@
     "develop": "strapi develop",
     "start": "strapi start",
     "build": "strapi build",
-    "strapi": "strapi"
+    "strapi": "strapi",
+    "production": "cross-env NODE_ENV=production npm start"
   },
   "devDependencies": {},
   "dependencies": {
+    "cross-env": "^7.0.3",
     "knex": "0.21.18",
     "mongoose": "^5.12.0",
     "sqlite3": "5.0.0",
