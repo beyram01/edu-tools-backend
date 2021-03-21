@@ -1,0 +1,12 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/auth",
+      "handler": "Auth.index",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}

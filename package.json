@@ -7,11 +7,11 @@
     "develop": "strapi develop",
     "start": "strapi start",
     "build": "strapi build",
-    "strapi": "strapi",
-    "production": "cross-env NODE_ENV=production npm start"
+    "strapi": "strapi"
   },
   "devDependencies": {},
   "dependencies": {
+    "@sentry/node": "^6.2.3",
     "cross-env": "^7.0.3",
     "knex": "0.21.18",
     "mongoose": "^5.12.0",
