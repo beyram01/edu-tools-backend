@@ -1,11 +1,32 @@
 {
   "routes": [
     {
-      "method": "GET",
-      "path": "/auth",
-      "handler": "Auth.index",
+      "method": "POST",
+      "path": "/auth/local",
+      "handler": "Auth.callback",
       "config": {
-        "policies": []
+        "policies": ["plugins::users-permissions.ratelimit"],
+        "prefix": "",
+        "description": "Login a user using the identifiers email and password",
+        "tag": {
+          "plugin": "users-permissions",
+          "name": "User"
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/auth/local/register",
+      "handler": "Auth.register",
+      "config": {
+        "policies": ["plugins::users-permissions.ratelimit"],
+        "prefix": "",
+        "description": "Register a new user with the default role",
+        "tag": {
+          "plugin": "users-permissions",
+          "name": "User",
+          "actionType": "create"
+        }
       }
     }
   ]
