@@ -4,8 +4,7 @@ module.exports = ({ env }) => ({
     default: {
       connector: "mongoose",
       settings: {
-        uri:
-          "mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false",
+        uri: "mongodb://localhost:27017/",
       },
       options: {},
     },
