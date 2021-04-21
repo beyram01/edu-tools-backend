@@ -1,4 +1,5 @@
 const _ = require("lodash");
+const crypto = require("crypto");
 const grant = require("grant-koa");
 const { sanitizeEntity } = require("strapi-utils");
 
@@ -332,6 +333,158 @@ module.exports = {
         : { id: "Auth.form.error.email.taken", message: "Email already taken" };
 
       ctx.send(formatError(adminError));
+    }
+  },
+
+  async forgotPassword(ctx) {
+    let { email } = ctx.request.body;
+
+    // Check if the provided email is valid or not.
+    const isEmail = emailRegExp.test(email);
+
+    if (isEmail) {
+      email = email.toLowerCase();
+    } else {
+      return ctx.send({
+        error: "Please provide valid email address.",
+      });
+    }
+
+    const pluginStore = await strapi.store({
+      environment: "",
+      type: "plugin",
+      name: "users-permissions",
+    });
+
+    // Find the user by email.
+    const user = await strapi
+      .query("user", "users-permissions")
+      .findOne({ email: email.toLowerCase() });
+
+    // User not found.
+    if (!user) {
+      return ctx.send({
+        id: "Auth.form.error.user.not-exist",
+        error: "This email does not exist.",
+      });
+    }
+
+    // Generate random token.
+    const resetPasswordToken = crypto.randomBytes(64).toString("hex");
+
+    const settings = await pluginStore
+      .get({ key: "email" })
+      .then((storeEmail) => {
+        try {
+          return storeEmail["reset_password"].options;
+        } catch (error) {
+          return {};
+        }
+      });
+
+    const advanced = await pluginStore.get({
+      key: "advanced",
+    });
+
+    const userInfo = sanitizeEntity(user, {
+      model: strapi.query("user", "users-permissions").model,
+    });
+
+    settings.message = await strapi.plugins[
+      "users-permissions"
+    ].services.userspermissions.template(settings.message, {
+      URL: advanced.email_reset_password,
+      USER: userInfo,
+      TOKEN: resetPasswordToken,
+    });
+
+    settings.object = await strapi.plugins[
+      "users-permissions"
+    ].services.userspermissions.template(settings.object, {
+      USER: userInfo,
+    });
+
+    try {
+      console.log(settings);
+      // Send an email to the user.
+      await strapi.plugins["email"].services.email.send({
+        to: user.email,
+        from:
+          settings.from.email || settings.from.name
+            ? `${settings.from.name} <${settings.from.email}>`
+            : undefined,
+        replyTo: settings.response_email,
+        subject: settings.object,
+        text: settings.message,
+        html: settings.message,
+      });
+    } catch (err) {
+      return ctx.send({ error: err.message });
+    }
+
+    // Update the user.
+    await strapi
+      .query("user", "users-permissions")
+      .update({ id: user.id }, { resetPasswordToken });
+
+    ctx.send({
+      ok: true,
+      message: "Check your Email, An email has been Sent.",
+    });
+  },
+  async resetPassword(ctx) {
+    const params = _.assign({}, ctx.request.body, ctx.params);
+
+    if (
+      params.password &&
+      params.passwordConfirmation &&
+      params.password === params.passwordConfirmation &&
+      params.code
+    ) {
+      const user = await strapi
+        .query("user", "users-permissions")
+        .findOne({ resetPasswordToken: `${params.code}` });
+
+      if (!user) {
+        return ctx.send({
+          id: "Auth.form.error.code.provide",
+          error: "Incorrect code provided.",
+        });
+      }
+
+      const password = await strapi.plugins[
+        "users-permissions"
+      ].services.user.hashPassword({
+        password: params.password,
+      });
+
+      // Update the user.
+      await strapi
+        .query("user", "users-permissions")
+        .update({ id: user.id }, { resetPasswordToken: null, password });
+
+      ctx.send({
+        jwt: strapi.plugins["users-permissions"].services.jwt.issue({
+          id: user.id,
+        }),
+        user: sanitizeEntity(user.toJSON ? user.toJSON() : user, {
+          model: strapi.query("user", "users-permissions").model,
+        }),
+      });
+    } else if (
+      params.password &&
+      params.passwordConfirmation &&
+      params.password !== params.passwordConfirmation
+    ) {
+      return ctx.send({
+        id: "Auth.form.error.password.matching",
+        error: "Passwords do not match.",
+      });
+    } else {
+      return ctx.send({
+        id: "Auth.form.error.params.provide",
+        error: "Incorrect params provided.",
+      });
     }
   },
 };

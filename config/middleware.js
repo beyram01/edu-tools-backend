@@ -1,10 +1,5 @@
 module.exports = {
-  load: {
-    before: ["boom", "sentry"],
-  },
-  settings: {
-    sentry: {
-      enabled: true,
-    },
+  cors: {
+    origin: [process.env.FRONTEND_URL],
   },
 };
