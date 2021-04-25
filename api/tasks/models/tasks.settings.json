@@ -1,0 +1,32 @@
+{
+  "kind": "collectionType",
+  "collectionName": "tasks",
+  "info": {
+    "name": "Tasks"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "description": {
+      "type": "string",
+      "required": true
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "todo",
+        "done",
+        "onhold"
+      ],
+      "required": true,
+      "default": "todo"
+    },
+    "project": {
+      "via": "tasks",
+      "model": "projects"
+    }
+  }
+}

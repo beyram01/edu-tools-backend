@@ -28,7 +28,7 @@
       "type": "boolean",
       "default": false
     },
-    "users_permissions_user": {
+    "owner": {
       "columnName": "owner",
       "plugin": "users-permissions",
       "model": "user",

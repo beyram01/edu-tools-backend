@@ -11,7 +11,7 @@ module.exports = {
     let entitys;
     if (username) {
       entitys = await strapi.services.events.find({
-        "users_permissions_user.username": username,
+        "owner.username": username,
       });
     } else {
       entitys = await strapi.services.events.find();

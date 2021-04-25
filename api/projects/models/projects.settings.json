@@ -1,0 +1,30 @@
+{
+  "kind": "collectionType",
+  "collectionName": "projects",
+  "info": {
+    "name": "Projects",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "Title": {
+      "type": "string",
+      "required": true,
+      "unique": false
+    },
+    "owner": {
+      "columnName": "owner",
+      "plugin": "users-permissions",
+      "model": "user",
+      "via": "projects"
+    },
+    "tasks": {
+      "collection": "tasks",
+      "via": "project"
+    }
+  }
+}

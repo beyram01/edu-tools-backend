@@ -59,8 +59,12 @@
       "plugin": "users-permissions",
       "configurable": false
     },
+    "projects": {
+      "via": "owner",
+      "collection": "projects"
+    },
     "events": {
-      "via": "users_permissions_user",
+      "via": "owner",
       "collection": "events"
     }
   }
