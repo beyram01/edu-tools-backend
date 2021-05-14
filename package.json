@@ -9,11 +9,11 @@
     "build": "strapi build",
     "strapi": "strapi"
   },
-  "devDependencies": {},
   "dependencies": {
     "@sentry/node": "^6.2.3",
     "cross-env": "^7.0.3",
     "grant-koa": "^5.4.8",
+    "ibm-watson": "^6.0.4",
     "knex": "0.21.18",
     "lodash": "^4.17.21",
     "mongoose": "^5.12.0",
