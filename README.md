@@ -1,3 +1,3 @@
-# Strapi application
+# Edu-tools (Backend)
 
-A quick description of your strapi application
+Created with The Strapi Framework.
